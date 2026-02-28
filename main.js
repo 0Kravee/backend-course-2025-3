@@ -8,34 +8,45 @@ program
   .option('-i, --input <path>', 'path to input JSON file')
   .option('-o, --output <path>', 'path to output file')
   .option('-d, --display', 'display result in console')
+  .option('-c, --cylinders', 'display number of cylinders')
+  .option('-m, --mpg <value>', 'show only cars with mpg below specified value', parseFloat)
   .parse(process.argv);
 
 const options = program.opts();
 
-// Check required parameter
 if (!options.input) {
   console.error('Please, specify input file');
   process.exit(1);
 }
 
-// Check if input file exists
 const inputPath = path.resolve(options.input);
 if (!fs.existsSync(inputPath)) {
   console.error('Cannot find input file');
   process.exit(1);
 }
 
-// Read and parse NDJSON (one JSON object per line)
 const rawData = fs.readFileSync(inputPath, 'utf-8');
 const data = rawData
   .split('\n')
   .filter(line => line.trim() !== '')
   .map(line => JSON.parse(line));
 
-// Format output - just stringify for now
-const output = JSON.stringify(data, null, 2);
+let result = data;
+if (options.mpg !== undefined) {
+  result = result.filter(car => car.mpg < options.mpg);
+}
 
-// Output handling
+const lines = result.map(car => {
+  let parts = [car.model];
+  if (options.cylinders) {
+    parts.push(car.cyl);
+  }
+  parts.push(car.mpg);
+  return parts.join(' ');
+});
+
+const output = lines.join('\n');
+
 if (!options.output && !options.display) {
   process.exit(0);
 }

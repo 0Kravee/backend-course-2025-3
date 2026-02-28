@@ -16,5 +16,8 @@
     "url": "https://github.com/0Kravee/backend-course-2025-3/issues"
   },
   "homepage": "https://github.com/0Kravee/backend-course-2025-3#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "commander": "^14.0.3"
+  }
 }
