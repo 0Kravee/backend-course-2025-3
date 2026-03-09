@@ -1,23 +1,26 @@
 const { Command } = require('commander');
 const fs = require('fs');
 const path = require('path');
-
 const program = new Command();
 
 program
-  .option('-i, --input <path>', 'path to input JSON file')
+  .configureOutput({
+    outputError: (str, write) => {
+      if (process.argv.slice(2).length === 0) {
+        process.exit(0);
+      }
+      console.error('Please, specify input file');
+      process.exit(1);
+    }
+  })
   .option('-o, --output <path>', 'path to output file')
   .option('-d, --display', 'display result in console')
   .option('-c, --cylinders', 'display number of cylinders')
   .option('-m, --mpg <value>', 'show only cars with mpg below specified value', parseFloat)
+  .requiredOption('-i, --input <path>', 'path to input JSON file')
   .parse(process.argv);
 
 const options = program.opts();
-
-if (!options.input) {
-  console.error('Please, specify input file');
-  process.exit(1);
-}
 
 const inputPath = path.resolve(options.input);
 if (!fs.existsSync(inputPath)) {
